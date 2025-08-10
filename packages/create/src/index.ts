@@ -1,3 +1,5 @@
+#!/usr/bin/env bun
+
 import { cli, z } from 'zlye'
 import { version } from '../package.json'
 import { createProject } from './create'
