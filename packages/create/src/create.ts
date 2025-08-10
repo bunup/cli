@@ -22,7 +22,7 @@ type Template = {
 	monorepoDir?: string
 }
 
-const TEMPLATE_OWNER = 'arshad-yaseen'
+const TEMPLATE_OWNER = 'bunup'
 const TEMPLATE_REPO = 'bunup-templates'
 
 const GITHUB_USERNAME_PLACEHOLDER = 'username'
