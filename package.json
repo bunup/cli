@@ -1,0 +1,48 @@
+{
+	"name": "bunup-kit-monorepo",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/bunup/bunup-kit.git"
+	},
+	"type": "module",
+	"private": true,
+	"scripts": {
+		"build": "bunup",
+		"dev": "bunup --watch",
+		"lint": "biome check .",
+		"lint:fix": "biome check --write .",
+		"format": "biome format .",
+		"format:fix": "biome format --write .",
+		"tsc": "tsc --noEmit",
+		"test": "bun test",
+		"test:watch": "bun test --watch",
+		"test:coverage": "bun test --coverage",
+		"release": "bumpp -r --commit --push --tag",
+		"publish:ci": "bun run --filter './packages/**' publish:ci",
+		"prepare": "husky"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^1.9.4",
+		"@commitlint/cli": "^19.8.1",
+		"@commitlint/config-conventional": "^19.8.1",
+		"@types/bun": "^1.2.19",
+		"bumpp": "^10.2.2",
+		"bunup": "^0.8.72",
+		"husky": "^9.1.7",
+		"typescript": "^5.9.2"
+	},
+	"peerDependencies": {
+		"typescript": ">=4.5.0"
+	},
+	"peerDependenciesMeta": {
+		"typescript": {
+			"optional": true
+		}
+	},
+	"workspaces": ["packages/*"],
+	"homepage": "https://github.com/bunup/bunup-kit#readme",
+	"bugs": {
+		"url": "https://github.com/bunup/bunup-kit/issues"
+	},
+	"license": "MIT"
+}
