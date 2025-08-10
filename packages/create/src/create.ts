@@ -12,7 +12,7 @@ import {
 import { downloadTemplate } from 'giget'
 import pc from 'picocolors'
 import { replaceInFile } from 'replace-in-file'
-import { displayBunupGradientArt, link, pathExistsSync } from './utils'
+import { link, pathExistsSync } from './utils'
 
 type Template = {
 	type: 'typescript' | 'react'
@@ -49,7 +49,6 @@ const TEMPLATES: Template[] = [
 export async function createProject(
 	projectNameFromCli?: string,
 ): Promise<void> {
-	displayBunupGradientArt()
 	intro(pc.bgCyan(pc.black(' Scaffold a new project with Bunup ')))
 
 	const selectedTemplateDir = await select({
