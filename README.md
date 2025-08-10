@@ -1,25 +1,5 @@
 # bunup-kit
 
-A typescript library
+The companion toolkit to keep Bunup-powered libraries sharp and future-ready.
 
-## Installation
-
-```bash
-npm install create
-```
-
-## Usage
-
-```typescript
-import { greet } from 'create';
-
-console.log(greet('World')); // Hello, World!
-```
-
-## Contributing
-
-Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for contribution guidelines.
-
-## License
-
-MIT
+- [Scaffolding](https://bunup.dev/docs/scaffold-with-bunup)
