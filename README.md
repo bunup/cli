@@ -1,5 +1,11 @@
-# bunup-kit
+# Bunup Kit
 
-The companion toolkit to keep Bunup-powered libraries sharp and future-ready.
+Tools to build, evolve, and polish bunup projects.
 
-- [Scaffolding](https://bunup.dev/docs/scaffold-with-bunup)
+## CLI
+
+Bunup's CLI that does the heavy lifting for you.
+
+```sh
+bunx @bunup/cli [create/init]
+```
