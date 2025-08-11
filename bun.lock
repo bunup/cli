@@ -3,6 +3,9 @@
   "workspaces": {
     "": {
       "name": "bunup-kit-monorepo",
+      "dependencies": {
+        "coffi": "^0.1.31",
+      },
       "devDependencies": {
         "@biomejs/biome": "^1.9.4",
         "@commitlint/cli": "^19.8.1",
@@ -20,15 +23,18 @@
         "typescript",
       ],
     },
-    "packages/create": {
-      "name": "@bunup/create",
-      "version": "0.1.0",
+    "packages/cli": {
+      "name": "@bunup/cli",
+      "version": "0.0.1",
+      "bin": {
+        "bunup-cli": "./dist/index.js",
+      },
       "dependencies": {
         "@clack/prompts": "^0.11.0",
         "giget": "^2.0.0",
         "picocolors": "^1.1.1",
         "replace-in-file": "^8.3.0",
-        "zlye": "^0.1.4",
+        "zlye": "^0.1.5",
       },
     },
   },
@@ -61,7 +67,7 @@
 
     "@biomejs/cli-win32-x64": ["@biomejs/cli-win32-x64@1.9.4", "", { "os": "win32", "cpu": "x64" }, "sha512-8Y5wMhVIPaWe6jw2H+KlEm4wP/f7EW3810ZLmDlrEEy5KvBsb9ECEfu/kMWD484ijfQ8+nIi0giMgu9g1UAuuA=="],
 
-    "@bunup/create": ["@bunup/create@workspace:packages/create"],
+    "@bunup/cli": ["@bunup/cli@workspace:packages/cli"],
 
     "@clack/core": ["@clack/core@0.5.0", "", { "dependencies": { "picocolors": "^1.0.0", "sisteransi": "^1.0.5" } }, "sha512-p3y0FIOwaYRUPRcMO7+dlmLh8PSRcrjuTndsiA0WAFbWES0mLZlrjVoBRZ9DzkPFJZG6KGkJmoEAY0ZcVWTkow=="],
 
@@ -485,7 +491,7 @@
 
     "yocto-queue": ["yocto-queue@1.2.1", "", {}, "sha512-AyeEbWOu/TAXdxlV9wmGcR0+yh2j3vYPGOECcIj2S7MkrLyC7ne+oye2BKTItt0ii2PHk4cDy+95+LshzbXnGg=="],
 
-    "zlye": ["zlye@0.1.4", "", { "dependencies": { "picocolors": "^1.1.1" }, "peerDependencies": { "typescript": ">=4.5.0" }, "optionalPeers": ["typescript"] }, "sha512-3AvyLLJzWlxv+dw6RCWEgMUZjZFeT9ulfeZcDraqpeFDDhxYj8g9ZEY3JRi7dCC6n0Zdz5aFDB01dbRG0hy3GQ=="],
+    "zlye": ["zlye@0.1.5", "", { "dependencies": { "picocolors": "^1.1.1" }, "peerDependencies": { "typescript": ">=4.5.0" }, "optionalPeers": ["typescript"] }, "sha512-3oJ7njdr4iArW41/UebzBmyaZFDZZQHPnsbYNPUmHXKDsAztSsFEUZqFqrdesFXyzRAI6mWgqRPgXrRwxB34Gw=="],
 
     "@isaacs/cliui/string-width": ["string-width@5.1.2", "", { "dependencies": { "eastasianwidth": "^0.2.0", "emoji-regex": "^9.2.2", "strip-ansi": "^7.0.1" } }, "sha512-HnLOCR3vjcY8beoNLtcjZ5/nxn2afmME6lhrDrebokqMap+XbeW8n9TXpPDOqdGK5qcI3oT0GKTW6wC7EMiVqA=="],
 

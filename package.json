@@ -1,5 +1,5 @@
 {
-	"name": "bunup-kit-monorepo",
+	"name": "bunup-kit",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/bunup/bunup-kit.git"
@@ -44,5 +44,8 @@
 	"bugs": {
 		"url": "https://github.com/bunup/bunup-kit/issues"
 	},
-	"license": "MIT"
+	"license": "MIT",
+	"dependencies": {
+		"coffi": "^0.1.31"
+	}
 }

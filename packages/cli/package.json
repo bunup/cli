@@ -1,7 +1,7 @@
 {
-	"name": "@bunup/create",
-	"description": "Scaffolding tool for Bunup",
-	"version": "0.1.7",
+	"name": "@bunup/cli",
+	"description": "Bunup's CLI that does the heavy lifting.",
+	"version": "0.0.1",
 	"type": "module",
 	"files": ["dist"],
 	"module": "./dist/index.js",
@@ -11,7 +11,7 @@
 		"publish:ci": "bun publish --access public --no-git-checks"
 	},
 	"bin": {
-		"create-bunup": "./dist/index.js"
+		"bunup-cli": "./dist/index.js"
 	},
 	"exports": {
 		".": {
@@ -36,6 +36,6 @@
 		"giget": "^2.0.0",
 		"picocolors": "^1.1.1",
 		"replace-in-file": "^8.3.0",
-		"zlye": "^0.1.4"
+		"zlye": "^0.1.5"
 	}
 }
