@@ -1,7 +1,7 @@
 {
 	"name": "@bunup/cli",
 	"description": "Bunup's CLI that does the heavy lifting.",
-	"version": "0.0.4",
+	"version": "0.0.5",
 	"type": "module",
 	"files": ["dist"],
 	"module": "./dist/index.js",
