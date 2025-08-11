@@ -1,14 +1,6 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import {
-	confirm,
-	intro,
-	log,
-	multiselect,
-	outro,
-	tasks,
-	text,
-} from '@clack/prompts'
+import { confirm, intro, log, outro, tasks, text } from '@clack/prompts'
 import pc from 'picocolors'
 import { exec } from 'tinyexec'
 import { loadPackageJson } from './loaders'
