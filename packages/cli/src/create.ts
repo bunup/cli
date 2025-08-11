@@ -23,7 +23,7 @@ type Template = {
 }
 
 const TEMPLATE_OWNER = 'bunup'
-const TEMPLATE_REPO = 'bunup-templates'
+const TEMPLATE_REPO = 'templates'
 
 const GITHUB_USERNAME_PLACEHOLDER = 'username'
 const GITHUB_REPO_PLACEHOLDER = 'repo-name'
