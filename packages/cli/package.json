@@ -36,6 +36,7 @@
 		"giget": "^2.0.0",
 		"picocolors": "^1.1.1",
 		"replace-in-file": "^8.3.0",
+		"tinyexec": "^1.0.1",
 		"zlye": "^0.1.5"
 	}
 }
