@@ -1,12 +1,6 @@
-import { defineWorkspace } from 'bunup'
+import { defineConfig } from 'bunup'
 
-export default defineWorkspace([
-	{
-		name: 'create',
-		root: 'packages/create',
-		config: {
-			entry: ['src/index.ts'],
-			format: ['esm', 'cjs'],
-		},
-	},
-])
+export default defineConfig({
+	entry: ['bunup.config.ts'],
+	format: ['esm', 'cjs'],
+})

@@ -6,7 +6,6 @@ import {
 	log,
 	multiselect,
 	outro,
-	select,
 	tasks,
 	text,
 } from '@clack/prompts'
@@ -63,30 +62,19 @@ async function promptForWorkspace(): Promise<boolean> {
 
 async function initializeWorkspace(packageJsonPath: string): Promise<void> {
 	const workspacePackages = await collectWorkspacePackages()
-	const configMethod = await selectWorkspaceConfigurationMethod()
+	const plugins = await selectProductivityPlugins()
 
-	await generateWorkspaceConfiguration(configMethod, workspacePackages)
+	await generateWorkspaceConfiguration(workspacePackages, plugins)
 	await handleWorkspaceBuildScripts(packageJsonPath)
 }
 
 async function initializeSinglePackage(packageJsonPath: string): Promise<void> {
 	const entryFiles = await collectEntryFiles()
 	const outputFormats = await selectOutputFormats()
-	const configMethod = await selectConfigurationMethod()
+	const plugins = await selectProductivityPlugins()
 
-	await generateConfiguration(
-		configMethod,
-		entryFiles,
-		outputFormats,
-		packageJsonPath,
-	)
-
-	await handleBuildScripts(
-		packageJsonPath,
-		entryFiles,
-		outputFormats,
-		configMethod,
-	)
+	await generateConfiguration(entryFiles, outputFormats, plugins)
+	await handleBuildScripts(packageJsonPath)
 }
 
 async function collectWorkspacePackages(): Promise<WorkspacePackage[]> {
@@ -156,7 +144,7 @@ async function collectEntryFilesForPackage(
 					? `Where is the next entry file for "${packageName}"? (relative to ${packageRoot})`
 					: `Where is the entry file for "${packageName}"? (relative to ${packageRoot})`,
 			placeholder: 'src/index.ts',
-			defaultValue: 'src/index.ts',
+			initialValue: 'src/index.ts',
 			validate: (value) => {
 				if (!value) return 'Entry file is required'
 
@@ -227,69 +215,46 @@ async function selectOutputFormats(): Promise<string[]> {
 	})) as string[]
 }
 
-async function selectWorkspaceConfigurationMethod(): Promise<string> {
-	return (await select({
-		message: 'How would you like to configure your workspace?',
+async function selectProductivityPlugins(): Promise<string[]> {
+	return (await multiselect({
+		message: 'Select productivity plugins that make your life easier',
 		options: [
-			{ value: 'ts', label: 'bunup.config.ts', hint: 'Recommended' },
-			{ value: 'js', label: 'bunup.config.js' },
-		],
-		initialValue: 'ts',
-	})) as string
-}
-
-async function selectConfigurationMethod(): Promise<string> {
-	return (await select({
-		message: 'How would you like to configure Bunup?',
-		options: [
-			{ value: 'ts', label: 'bunup.config.ts', hint: 'Recommended' },
-			{ value: 'js', label: 'bunup.config.js' },
-			{ value: 'json', label: 'package.json "bunup" property' },
 			{
-				value: 'none',
-				label: 'No config file',
-				hint: 'Configure via CLI only',
+				value: 'exports',
+				label: 'Exports',
+				hint: 'Automatically generates and updates the exports field in package.json',
+			},
+			{
+				value: 'unused',
+				label: 'Unused',
+				hint: 'Detects and reports unused dependencies in your project',
 			},
 		],
-		initialValue: 'ts',
-	})) as string
+		initialValues: ['exports', 'unused'],
+		required: false,
+	})) as string[]
 }
 
 async function generateWorkspaceConfiguration(
-	configMethod: string,
 	workspacePackages: WorkspacePackage[],
+	plugins: string[],
 ): Promise<void> {
-	const configContent = createWorkspaceConfigFileContent(workspacePackages)
-	await Bun.write(`bunup.config.${configMethod}`, configContent)
+	const configContent = createWorkspaceConfigFileContent(
+		workspacePackages,
+		plugins,
+	)
+	await Bun.write('bunup.config.ts', configContent)
 }
 
 async function generateConfiguration(
-	configMethod: string,
 	entryFiles: string[],
 	outputFormats: string[],
-	packageJsonPath: string,
+	plugins: string[],
 ): Promise<void> {
-	if (configMethod === 'none') {
-		log.info(
-			'If you need more control (such as adding plugins or customizing output), you can always create a config file later.',
-		)
-		return
-	}
-
-	if (configMethod === 'ts' || configMethod === 'js') {
-		await Bun.write(
-			`bunup.config.${configMethod}`,
-			createConfigFileContent(entryFiles, outputFormats),
-		)
-	} else if (configMethod === 'json') {
-		const { data: packageJsonConfig } = await loadPackageJson()
-
-		const updatedConfig = {
-			...packageJsonConfig,
-			bunup: createPackageJsonConfig(entryFiles, outputFormats),
-		}
-		await Bun.write(packageJsonPath, JSON.stringify(updatedConfig, null, 2))
-	}
+	await Bun.write(
+		'bunup.config.ts',
+		createConfigFileContent(entryFiles, outputFormats, plugins),
+	)
 }
 
 async function handleWorkspaceBuildScripts(
@@ -326,19 +291,14 @@ async function handleWorkspaceBuildScripts(
 	await Bun.write(packageJsonPath, JSON.stringify(updatedConfig, null, 2))
 }
 
-async function handleBuildScripts(
-	packageJsonPath: string,
-	entryFiles: string[],
-	outputFormats: string[],
-	configMethod: string,
-): Promise<void> {
+async function handleBuildScripts(packageJsonPath: string): Promise<void> {
 	const { data: packageJsonConfig } = await loadPackageJson()
 
 	const existingScripts = (packageJsonConfig?.scripts ?? {}) as Record<
 		string,
 		string
 	>
-	const newScripts = createBuildScripts(entryFiles, outputFormats, configMethod)
+	const newScripts = createBuildScripts()
 
 	const conflictingScripts = Object.keys(newScripts).filter(
 		(script) => existingScripts[script],
@@ -366,6 +326,7 @@ async function handleBuildScripts(
 
 function createWorkspaceConfigFileContent(
 	workspacePackages: WorkspacePackage[],
+	plugins: string[],
 ): string {
 	const packagesConfig = workspacePackages
 		.map((pkg) => {
@@ -380,35 +341,59 @@ function createWorkspaceConfigFileContent(
 		})
 		.join(',\n')
 
-	return `import { defineWorkspace } from 'bunup'
+	const pluginImports =
+		plugins.length > 0 ? plugins.map((plugin) => plugin).join(', ') : ''
+
+	const pluginsConfig =
+		plugins.length > 0
+			? `,
+  {
+    // Shared configuration applied to all packages
+    plugins: [${plugins.map((plugin) => `${plugin}()`).join(', ')}],
+  }`
+			: ''
+
+	const imports =
+		plugins.length > 0
+			? `import { defineWorkspace } from 'bunup'
+import { ${pluginImports} } from 'bunup/plugins'`
+			: `import { defineWorkspace } from 'bunup'`
+
+	return `${imports}
 
 export default defineWorkspace([
 ${packagesConfig}
-])
+]${pluginsConfig})
 `
 }
 
 function createConfigFileContent(
 	entryFiles: string[],
 	outputFormats: string[],
+	plugins: string[],
 ): string {
-	return `import { defineConfig } from 'bunup'
+	const pluginImports =
+		plugins.length > 0 ? plugins.map((plugin) => plugin).join(', ') : ''
+
+	const pluginsConfig =
+		plugins.length > 0
+			? `,
+	plugins: [${plugins.map((plugin) => `${plugin}()`).join(', ')}],`
+			: ''
+
+	const imports =
+		plugins.length > 0
+			? `import { defineConfig } from 'bunup'
+import { ${pluginImports} } from 'bunup/plugins'`
+			: `import { defineConfig } from 'bunup'`
+
+	return `${imports}
 
 export default defineConfig({
 	entry: [${entryFiles.map((file) => `'${file}'`).join(', ')}],
-	format: [${outputFormats.map((format) => `'${format}'`).join(', ')}],
+	format: [${outputFormats.map((format) => `'${format}'`).join(', ')}],${pluginsConfig}
 })
 `
-}
-
-function createPackageJsonConfig(
-	entryFiles: string[],
-	outputFormats: string[],
-): Record<string, unknown> {
-	return {
-		entry: entryFiles,
-		format: outputFormats,
-	}
 }
 
 function createWorkspaceBuildScripts(): Record<string, string> {
@@ -418,19 +403,10 @@ function createWorkspaceBuildScripts(): Record<string, string> {
 	}
 }
 
-function createBuildScripts(
-	entryFiles: string[],
-	outputFormats: string[],
-	configMethod: string,
-): Record<string, string> {
-	const cliOptions =
-		configMethod === 'none'
-			? ` ${entryFiles.join(' ')} --format ${outputFormats.join(',')}`
-			: ''
-
+function createBuildScripts(): Record<string, string> {
 	return {
-		build: `bunup${cliOptions}`,
-		dev: `bunup${cliOptions} --watch`,
+		build: 'bunup',
+		dev: 'bunup --watch',
 	}
 }
 
