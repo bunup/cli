@@ -18,12 +18,10 @@ interface WorkspacePackage {
 	name: string
 	root: string
 	entryFiles: string[]
-	outputFormats: string[]
 }
 
 interface ConfigOptions {
 	entryFiles: string[]
-	outputFormats: string[]
 	plugins: string[]
 }
 
@@ -75,12 +73,10 @@ async function initializeWorkspace(packageJsonPath: string): Promise<void> {
 
 async function initializeSinglePackage(packageJsonPath: string): Promise<void> {
 	const entryFiles = await collectEntryFiles()
-	const outputFormats = await selectOutputFormats()
 	const plugins = await selectProductivityPlugins()
 
 	await generateSinglePackageConfiguration({
 		entryFiles,
-		outputFormats,
 		plugins,
 	})
 	await handleBuildScripts(packageJsonPath)
@@ -96,13 +92,11 @@ async function collectWorkspacePackages(): Promise<WorkspacePackage[]> {
 			packageRoot,
 			packageName,
 		)
-		const outputFormats = await selectOutputFormats()
 
 		packages.push({
 			name: packageName,
 			root: packageRoot,
 			entryFiles,
-			outputFormats,
 		})
 
 		const shouldAddMore = await confirm({
@@ -234,21 +228,9 @@ async function promptForSingleEntryFile(
 	})) as string
 }
 
-async function selectOutputFormats(): Promise<string[]> {
-	return (await multiselect({
-		message: 'Select the output formats',
-		options: [
-			{ value: 'esm', label: 'ESM (.mjs)' },
-			{ value: 'cjs', label: 'CommonJS (.cjs)' },
-			{ value: 'iife', label: 'IIFE (.global.js)' },
-		],
-		initialValues: ['esm', 'cjs'],
-	})) as string[]
-}
-
 async function selectProductivityPlugins(): Promise<string[]> {
 	return (await multiselect({
-		message: 'Select productivity plugins that make your life easier',
+		message: 'Do you want to use any productivity plugins?',
 		options: [
 			{
 				value: 'exports',
@@ -343,16 +325,13 @@ import { ${plugins.join(', ')} } from 'bunup/plugins'`
 	const packagesConfig = workspacePackages
 		.map((pkg) => {
 			const entryArray = pkg.entryFiles.map((file) => `'${file}'`).join(', ')
-			const formatArray = pkg.outputFormats
-				.map((format) => `'${format}'`)
-				.join(', ')
 
 			return `  {
     name: '${pkg.name}',
     root: '${pkg.root}',
     config: {
       entry: [${entryArray}],
-      format: [${formatArray}],
+      format: ['esm', 'cjs'],
     },
   }`
 		})
@@ -374,7 +353,7 @@ ${packagesConfig}
 }
 
 function createSinglePackageConfigContent(options: ConfigOptions): string {
-	const { entryFiles, outputFormats, plugins } = options
+	const { entryFiles, plugins } = options
 	const hasPlugins = plugins.length > 0
 
 	const imports = hasPlugins
@@ -383,7 +362,6 @@ import { ${plugins.join(', ')} } from 'bunup/plugins'`
 		: `import { defineConfig } from 'bunup'`
 
 	const entryArray = entryFiles.map((file) => `'${file}'`).join(', ')
-	const formatArray = outputFormats.map((format) => `'${format}'`).join(', ')
 
 	const pluginsConfig = hasPlugins
 		? `,
@@ -394,7 +372,7 @@ import { ${plugins.join(', ')} } from 'bunup/plugins'`
 
 export default defineConfig({
 	entry: [${entryArray}],
-	format: [${formatArray}]${pluginsConfig}
+	format: ['esm', 'cjs']${pluginsConfig}
 })
 `
 }
