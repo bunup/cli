@@ -180,7 +180,7 @@ async function collectEntryFiles(): Promise<string[]> {
 					? 'Where is your next entry file?'
 					: 'Where is your entry file?',
 			placeholder: 'src/index.ts',
-			defaultValue: 'src/index.ts',
+			initialValue: 'src/index.ts',
 			validate: (value) => {
 				if (!value) return 'Entry file is required'
 				if (!fs.existsSync(value)) return 'Entry file does not exist'
