@@ -230,7 +230,6 @@ async function selectProductivityPlugins(): Promise<string[]> {
 				hint: 'Detects and reports unused dependencies in your project',
 			},
 		],
-		initialValues: ['exports', 'unused'],
 		required: false,
 	})) as string[]
 }
