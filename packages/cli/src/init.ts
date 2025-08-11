@@ -22,7 +22,6 @@ interface WorkspacePackage {
 
 interface ConfigOptions {
 	entryFiles: string[]
-	plugins: string[]
 }
 
 export async function init(): Promise<void> {
@@ -65,19 +64,16 @@ async function promptForWorkspace(): Promise<boolean> {
 
 async function initializeWorkspace(packageJsonPath: string): Promise<void> {
 	const workspacePackages = await collectWorkspacePackages()
-	const plugins = await selectProductivityPlugins()
 
-	await generateWorkspaceConfiguration(workspacePackages, plugins)
+	await generateWorkspaceConfiguration(workspacePackages)
 	await handleWorkspaceBuildScripts(packageJsonPath)
 }
 
 async function initializeSinglePackage(packageJsonPath: string): Promise<void> {
 	const entryFiles = await collectEntryFiles()
-	const plugins = await selectProductivityPlugins()
 
 	await generateSinglePackageConfiguration({
 		entryFiles,
-		plugins,
 	})
 	await handleBuildScripts(packageJsonPath)
 }
@@ -228,31 +224,10 @@ async function promptForSingleEntryFile(
 	})) as string
 }
 
-async function selectProductivityPlugins(): Promise<string[]> {
-	return (await multiselect({
-		message: 'Do you want to use any productivity plugins?',
-		options: [
-			{
-				value: 'exports',
-				label: 'Exports',
-				hint: 'Automatically generates and updates the exports field in package.json',
-			},
-			{
-				value: 'unused',
-				label: 'Unused',
-				hint: 'Detects and reports unused dependencies in your project',
-			},
-		],
-		initialValues: ['exports', 'unused'],
-		required: false,
-	})) as string[]
-}
-
 async function generateWorkspaceConfiguration(
 	workspacePackages: WorkspacePackage[],
-	plugins: string[],
 ): Promise<void> {
-	const configContent = createWorkspaceConfigContent(workspacePackages, plugins)
+	const configContent = createWorkspaceConfigContent(workspacePackages)
 	await Bun.write('bunup.config.ts', configContent)
 }
 
@@ -313,15 +288,7 @@ async function handleBuildScriptsCommon(
 
 function createWorkspaceConfigContent(
 	workspacePackages: WorkspacePackage[],
-	plugins: string[],
 ): string {
-	const hasPlugins = plugins.length > 0
-
-	const imports = hasPlugins
-		? `import { defineWorkspace } from 'bunup'
-import { ${plugins.join(', ')} } from 'bunup/plugins'`
-		: `import { defineWorkspace } from 'bunup'`
-
 	const packagesConfig = workspacePackages
 		.map((pkg) => {
 			const entryArray = pkg.entryFiles.map((file) => `'${file}'`).join(', ')
@@ -337,42 +304,24 @@ import { ${plugins.join(', ')} } from 'bunup/plugins'`
 		})
 		.join(',\n')
 
-	const pluginsConfig = hasPlugins
-		? `,
-{
-  plugins: [${plugins.map((plugin) => `${plugin}()`).join(', ')}],
-}`
-		: ''
-
-	return `${imports}
+	return `import { defineWorkspace } from 'bunup'
 
 export default defineWorkspace([
 ${packagesConfig}
-]${pluginsConfig})
+])
 `
 }
 
 function createSinglePackageConfigContent(options: ConfigOptions): string {
-	const { entryFiles, plugins } = options
-	const hasPlugins = plugins.length > 0
-
-	const imports = hasPlugins
-		? `import { defineConfig } from 'bunup'
-import { ${plugins.join(', ')} } from 'bunup/plugins'`
-		: `import { defineConfig } from 'bunup'`
+	const { entryFiles } = options
 
 	const entryArray = entryFiles.map((file) => `'${file}'`).join(', ')
 
-	const pluginsConfig = hasPlugins
-		? `,
-	plugins: [${plugins.map((plugin) => `${plugin}()`).join(', ')}],`
-		: ''
-
-	return `${imports}
+	return `import { defineConfig } from 'bunup'
 
 export default defineConfig({
 	entry: [${entryArray}],
-	format: ['esm', 'cjs']${pluginsConfig}
+	format: ['esm', 'cjs']
 })
 `
 }
