@@ -19,16 +19,14 @@
 		"test:coverage": "bun test --coverage",
 		"release": "bumpp -r --commit --push --tag",
 		"publish:ci": "bun run --filter './packages/**' publish:ci",
-		"prepare": "husky"
+		"prepare": "simple-git-hooks"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.9.4",
-		"@commitlint/cli": "^19.8.1",
-		"@commitlint/config-conventional": "^19.8.1",
 		"@types/bun": "^1.2.19",
 		"bumpp": "^10.2.2",
 		"bunup": "^0.9.3",
-		"husky": "^9.1.7",
+		"simple-git-hooks": "^2.13.1",
 		"typescript": "^5.9.2"
 	},
 	"peerDependencies": {
@@ -43,6 +41,9 @@
 	"homepage": "https://github.com/bunup/bunup-kit#readme",
 	"bugs": {
 		"url": "https://github.com/bunup/bunup-kit/issues"
+	},
+	"simple-git-hooks": {
+		"pre-commit": "bun run lint:fix && git add ."
 	},
 	"license": "MIT",
 	"dependencies": {
