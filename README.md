@@ -1,11 +1,10 @@
-# Bunup Kit
+# Bunup CLI
 
-Tools to build, evolve, and polish bunup projects.
+Command-line tools to build, evolve, and polish **Bunup** projects.
 
-## CLI
+## Usage
 
-Bunup's CLI that does the heavy lifting for you.
+The Bunup CLI handles the heavy lifting for you:
 
 ```sh
-bunx @bunup/cli [create/init]
-```
+bunx @bunup/cli [create|init]
