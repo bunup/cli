@@ -1,8 +1,8 @@
 {
-	"name": "bunup-kit",
+	"name": "cli-monorepo",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/bunup/bunup-kit.git"
+		"url": "git+https://github.com/bunup/cli.git"
 	},
 	"type": "module",
 	"private": true,
@@ -38,9 +38,9 @@
 		}
 	},
 	"workspaces": ["packages/*"],
-	"homepage": "https://github.com/bunup/bunup-kit#readme",
+	"homepage": "https://github.com/bunup/cli#readme",
 	"bugs": {
-		"url": "https://github.com/bunup/bunup-kit/issues"
+		"url": "https://github.com/bunup/cli/issues"
 	},
 	"simple-git-hooks": {
 		"pre-commit": "bun run lint:fix && git add ."

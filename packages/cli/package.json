@@ -28,9 +28,9 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/bunup/bunup-kit.git"
+		"url": "git+https://github.com/bunup/cli.git"
 	},
-	"homepage": "https://github.com/bunup/bunup-kit/tree/main/packages/create#readme",
+	"homepage": "https://github.com/bunup/cli/tree/main/packages/create#readme",
 	"dependencies": {
 		"@clack/prompts": "^0.11.0",
 		"giget": "^2.0.0",
