@@ -269,7 +269,7 @@ export async function createProject(
    
    ${pc.cyan('cd')} ${projectName}
    ${pc.cyan('bun install')}
-   ${pc.cyan('bun run dev')}${pc.dim(template.type === 'react' ? ' (starts Bun + React to preview components real-time)' : ' (watch mode for development)')}
+   ${pc.cyan('bun run dev')}${pc.dim(template.type === 'react' && selectedVariant === 'full' ? ' (starts Bun + React to preview components real-time)' : ' (watch mode for development)')}
    
    ${pc.dim('Learn more:')} ${link('https://bunup.dev/', 'https://bunup.dev/')}
 
