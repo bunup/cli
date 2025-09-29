@@ -12,6 +12,7 @@ import {
 import { downloadTemplate } from 'giget'
 import pc from 'picocolors'
 import { replaceInFile } from 'replace-in-file'
+import { x } from 'tinyexec'
 import { link, pathExistsSync } from './utils'
 
 type TemplateVariant = 'basic' | 'full'
@@ -260,6 +261,18 @@ export async function createProject(
 				return 'Project customized'
 			},
 		},
+		{
+			title: 'Installing dependencies',
+			task: async () => {
+				await x('bun', ['install'], {
+					nodeOptions: { shell: true, stdio: 'pipe', cwd: projectPath },
+				})
+				await x('bun', ['run', 'build'], {
+					nodeOptions: { shell: true, stdio: 'pipe', cwd: projectPath },
+				})
+				return 'Dependencies installed'
+			},
+		},
 	])
 
 	outro(`
@@ -268,7 +281,6 @@ export async function createProject(
    ${pc.bold(`Ready to launch your ${template.name.toLowerCase()}?`)}
    
    ${pc.cyan('cd')} ${projectName}
-   ${pc.cyan('bun install')}
    ${pc.cyan('bun run dev')}${pc.dim(template.type === 'react' && selectedVariant === 'full' ? ' (starts Bun + React to preview components real-time)' : ' (watch mode for development)')}
    
    ${pc.dim('Learn more:')} ${link('https://bunup.dev/', 'https://bunup.dev/')}
