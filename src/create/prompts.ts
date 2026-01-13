@@ -13,6 +13,7 @@ export interface ProjectConfig {
 	description: string
 	username: string
 	repoName: string
+	initGit: boolean
 }
 
 export async function collectUserInputs(): Promise<ProjectConfig> {
@@ -180,6 +181,19 @@ export async function collectUserInputs(): Promise<ProjectConfig> {
 
 	const [username, repoName] = (githubInfo as string).split('/')
 
+	let initGit = false
+	const initGitChoice = await p.confirm({
+		message: 'Initialize a new git repository?',
+		initialValue: false,
+	})
+
+	if (p.isCancel(initGitChoice)) {
+		p.cancel('Operation cancelled')
+		process.exit(0)
+	}
+
+	initGit = initGitChoice as boolean
+
 	return {
 		variant: variant,
 		libraryType: libraryType,
@@ -190,6 +204,7 @@ export async function collectUserInputs(): Promise<ProjectConfig> {
 		description: description,
 		username,
 		repoName,
+		initGit,
 	}
 }
 

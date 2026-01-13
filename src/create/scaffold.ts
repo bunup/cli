@@ -82,6 +82,16 @@ export async function scaffoldProject(config: ProjectConfig): Promise<void> {
 
 		await $`cd ${projectPath} && bun run build`.nothrow().quiet()
 
+		if (config.initGit) {
+			s.message('Git initializing...')
+
+			await $`cd ${projectPath} && git init`.nothrow().quiet()
+			await $`cd ${projectPath} && git add -A`.nothrow().quiet()
+			await $`cd ${projectPath} && git commit -m "Initial commit from Bunup"`
+				.nothrow()
+				.quiet()
+		}
+
 		s.stop(`${pc.green('✓')} Project scaffolded successfully!`)
 	} catch (error) {
 		s.stop(`${pc.red('✗')} Failed to scaffold project`)
